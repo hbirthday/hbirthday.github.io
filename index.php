@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-orientations" content="portrait">
+  <meta name="theme-color" content="#007a40">
+  <meta name="screen-orientation" content="portrait">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
+  <link rel="manifest" href="site.webmanifest">
+
+  <title>Девиз дня</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #333;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #007a40;
+      background-image: url(img/fon.png);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      overflow: hidden;
+
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+
+    .clouds {
+      position: absolute;
+      width: 100%;
+      height: 100vh;
+    }
+
+    .cloud {
+      position: absolute;
+      width: 200px;
+      z-index: 5;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+      filter: blur(2px);
+    }
+
+    /* Исправленная анимация движения облаков */
+    @keyframes cloudMove {
+      0% {
+        transform: translateX(-100%);
+      }
+
+      100% {
+        transform: translateX(100vw);
+      }
+    }
+
+    /* Разная скорость для каждого облака */
+
+    .cloud:nth-child(1) {
+      width: 250px;
+      top: 2%;
+      animation-name: cloudMove;
+      animation-duration: 170s;
+      animation-delay: -125s;
+    }
+
+    .cloud:nth-child(2) {
+      width: 240px;
+      top: 12%;
+      animation-name: cloudMove;
+      animation-duration: 160s;
+      animation-delay: -40s;
+    }
+
+    .cloud:nth-child(3) {
+      top: 30%;
+      animation-name: cloudMove;
+      animation-duration: 125s;
+      animation-delay: -100s;
+    }
+
+    .cloud:nth-child(4) {
+      top: 33%;
+      animation-name: cloudMove;
+      animation-duration: 140s;
+      animation-delay: -40s;
+
+    }
+
+    .cloud:nth-child(5) {
+      bottom: 34%;
+      animation-name: cloudMove;
+      animation-duration: 135s;
+      animation-delay: -120s;
+    }
+
+    .cloud:nth-child(6) {
+      width: 250px;
+      bottom: 27%;
+      animation-name: cloudMove;
+      animation-duration: 70s;
+      animation-delay: -15s;
+    }
+
+
+    .logo {
+      position: relative;
+      width: 500px;
+      z-index: 70;
+      transition: top 0.5s ease-in-out;
+    }
+
+    .logo.up {
+      top: -20px !important;
+    }
+
+    .content-wrapper {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      max-width: 900px;
+      top: -60px;
+      flex-direction: column;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .randomizer-container {
+      position: relative;
+      flex-grow: 1;
+      display: flex;
+      text-align: center;
+      align-items: flex-end;
+      justify-content: center;
+      max-width: 500px;
+      width: 340px;
+      width: auto;
+      height: 660px;
+      padding: 30px;
+    }
+
+    .phrases-container {
+      position: absolute;
+      height: 400px;
+      overflow: hidden;
+      z-index: 10;
+      width: 100%;
+      top: 0px;
+      -webkit-mask: linear-gradient(to bottom,
+          transparent 3%,
+          white 15%,
+          white 90%,
+          transparent 100%);
+      mask: linear-gradient(to bottom,
+          transparent 3%,
+          white 15%,
+          white 90%,
+          transparent 100%);
+      transition: transform 0.5s ease-out;
+    }
+
+    .phrases-container.spinning {
+      transform: scale(1.26);
+    }
+
+    .phrases-list {
+      position: relative;
+      transition: transform 0.1s linear;
+    }
+
+    .phrase {
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.5s ease-out;
+      padding: 0;
+      text-align: center;
+      position: relative;
+    }
+
+    .phrase-image {
+      max-height: 100%;
+      object-fit: contain;
+      transition: all 0.3s ease;
+      filter: blur(0);
+      transition: all 0.5s ease-out;
+    }
+
+    .phrase:not(.active) .phrase-image {
+      width: 70%;
+    }
+
+    .phrase.active .phrase-image {
+      width: 100%;
+      opacity: 1;
+      filter: blur(0);
+      transform: scale(1.7);
+      transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .phrase.center-highlight .phrase-image {
+      width: 100%;
+      transform: scale(1.5);
+      opacity: 1;
+      filter: blur(0);
+      transition: all 1.4s ease;
+    }
+
+    .phrase.top-fade {
+      opacity: 1;
+    }
+
+    .phrase.bottom-fade {
+      opacity: 1;
+      -webkit-mask: linear-gradient(to bottom, white 20%, transparent 90%);
+      mask: linear-gradient(to bottom, white 20%, transparent 90%);
+    }
+
+    .controls {
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      flex-direction: column;
+      gap: 15px;
+      margin-top: 20px;
+      color: white;
+      background-size: contain;
+      background-position: bottom;
+      background-repeat: no-repeat;
+      width: 100vw;
+      height: 100%;
+      max-height: 300px;
+      z-index: 50;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 106, 55, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #spinButton {
+      padding: 0;
+      width: 100%;
+      height: 80px;
+      bottom: -70px;
+      background: linear-gradient(135deg, #00A86B, #006A37);
+      background-image: url(img/knopka.png);
+      color: white;
+      background-size: cover;
+      background-position: center;
+      background-position-y: 0;
+      background-repeat: no-repeat;
+      box-shadow: unset;
+      z-index: 60;
+      transition: all 0.1s ease;
+      border: none;
+      outline: none;
+    }
+
+    #spinButton:active {
+      background-image: url(img/knopkaact.png);
+    }
+
+    #spinButton.spinning {
+      background-image: url(img/knopkaact.png);
+    }
+
+    #spinButton:disabled {
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    #stopButton {
+      display: none;
+      background: linear-gradient(135deg, #ff6b6b, #c44545);
+      color: white;
+    }
+
+    #stopButton:hover {
+      background: linear-gradient(135deg, #ff7b7b, #d45555);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(196, 69, 69, 0.4);
+    }
+
+    #stopButton:disabled {
+      background: linear-gradient(135deg, #cccccc, #aaaaaa);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .status {
+      display: none;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #006A37;
+      height: 20px;
+      font-weight: 500;
+    }
+
+    .foxs {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .fox {
+      position: absolute;
+      width: 322px;
+      transition: all 0.5s ease-in-out;
+    }
+
+    .fox:nth-child(1) {
+      z-index: 30;
+      top: 87px;
+    }
+
+    .fox.desc,
+    .fox.mob {
+      width: 181px;
+      top: 20px;
+      z-index: 40;
+    }
+
+    .fox:nth-child(4) {
+      z-index: 50;
+      top: 87px;
+    }
+
+    .fox-down .fox.desc,
+    .fox-down .fox.mob {
+      top: 110px;
+    }
+
+    .mob {
+      display: none;
+    }
+
+
+    @media (max-width: 900px) and (orientation: landscape) {
+      body {
+        transform: rotate(90deg);
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .logo {
+        width: 60%;
+      }
+
+      #spinButton {
+        width: 90%;
+        height: 70px;
+        bottom: -60px;
+        left: 3px;
+      }
+
+      .fox-down .fox.desc,
+      .fox-down .fox.mob {
+        top: 110px;
+      }
+    }
+
+    @media (max-width: 550px) {
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      body {
+        position: fixed;
+        min-height: 100%;
+        overflow: hidden;
+        background-image: url(img/bgm.png);
+      }
+
+      .clouds {
+        overflow: hidden;
+      }
+
+      .phrases-container {
+        width: 340px;
+        height: 390px;
+        top: 55px;
+      }
+
+      .mob {
+        display: flex;
+      }
+
+      .desc {
+        display: none;
+      }
+
+      .logo {
+        top: 100px;
+        width: 260px;
+      }
+
+      .randomizer-container {
+        height: 700px;
+        width: 100vw;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      #spinButton {
+        height: 66px;
+        bottom: -57px;
+      }
+
+      .fox-down .fox.desc,
+      .fox-down .fox.mob {
+        top: 80px;
+      }
+    }
+
+    .phrases-container.spinning .phrase.top-fade,
+    .phrases-container.spinning .phrase.bottom-fade {
+      -webkit-mask: none;
+      mask: none;
+    }
+  </style>
+
+  <style>
+    .preloader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #007a40;
+      background-image: url(img/fon.png);
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .preloader.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .preloader-content {
+      text-align: center;
+      color: white;
+    }
+
+    .preloader-logo {
+      margin-bottom: 30px;
+    }
+
+    .preloader-logo img {
+      width: 200px;
+      height: auto;
+    }
+
+    .progress-container {
+      width: 300px;
+      margin: 0 auto 20px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00A86B, #ffffff);
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.1s linear !important;
+      /* Быстрая анимация */
+    }
+
+    .progress-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .loading-text {
+      font-size: 16px;
+      color: white;
+      opacity: 0.8;
+      animation: pulse 1.5s infinite;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00A86B, #ffffff);
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.5s ease-in-out;
+      transform-origin: left;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 0.8;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <!-- Помести это ПЕРВЫМ элементом в body -->
+  <div id="preloader" class="preloader">
+    <div class="preloader-content">
+      <div class="preloader-logo">
+        <img src="img/logo.svg" alt="Девиз дня">
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">0%</div>
+      </div>
+      <div class="loading-text">Загрузка...</div>
+    </div>
+  </div>
+
+  <div class="clouds">
+    <img class="cloud" src="img/cloud1.svg" alt="">
+    <img class="cloud" src="img/cloud2.svg" alt="">
+    <img class="cloud" src="img/cloud3.svg" alt="">
+    <img class="cloud" src="img/cloud4.svg" alt="">
+    <img class="cloud" src="img/cloud5.svg" alt="">
+    <img class="cloud" src="img/cloud1.svg" alt="">
+  </div>
+
+  <div class="content-wrapper">
+    <img class="logo" src="img/logo.svg" alt="">
+    <div class="randomizer-container">
+      <div class="phrases-container">
+        <div class="phrases-list" id="phrasesList"></div>
+      </div>
+
+      <div class="controls">
+        <div class="foxs " id="foxsContainer">
+          <img class="fox" src="img/korz3.png" alt="">
+          <img class="fox mob" src="vid/1.gif" alt="">
+          <video class="fox desc" src="vid/1.webm" autoplay loop muted playsinline autoPlay={true}></video>
+          <img class="fox" src="img/korz1.png" alt="">
+        </div>
+
+        <button id="spinButton"></button>
+        <button id="stopButton" disabled>Остановить</button>
+      </div>
+      <div class="status" id="status"></div>
+    </div>
+  </div>
+
+  <script>
+    // Прелоадер с отслеживанием критических изображений
+    console.log('🔧 Загружается скрипт прелоадера...');
+
+    let preloaderStarted = false;
+    let criticalImagesLoaded = false;
+
+    function simplePreloader() {
+      if (preloaderStarted) return;
+      preloaderStarted = true;
+
+      console.log('🎯 Запуск прелоадера с отслеживанием изображений');
+
+      const preloader = document.getElementById('preloader');
+      if (!preloader) {
+        console.error('❌ Прелоадер не найден');
+        startMainApplication();
+        return;
+      }
+
+      console.log('✅ Прелоадер найден');
+
+      // Критические изображения для отслеживания
+      const criticalImages = [
+        'img/korz3.png',
+        'img/korz1.png',
+        'img/avangard.png',
+        'img/logo.svg'
+      ];
+
+      // На мобильных добавляем гифку, на десктоп - видео
+      if (window.innerWidth <= 550) {
+        criticalImages.push('vid/1.gif');
+        console.log('📱 Мобильная версия - отслеживаем гифку');
+      } else {
+        criticalImages.push('vid/1.webm');
+        console.log('💻 Десктоп версия - отслеживаем видео');
+      }
+
+      let loadedImages = 0;
+      const totalCriticalImages = criticalImages.length;
+
+      console.log(`📦 Отслеживаем ${totalCriticalImages} критических изображений:`, criticalImages);
+
+      // Функция для отслеживания загрузки одного изображения
+      function trackImageLoad(imageUrl) {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            loadedImages++;
+            console.log(`✅ Загружено: ${imageUrl} (${loadedImages}/${totalCriticalImages})`);
+            resolve();
+          };
+          img.onerror = () => {
+            loadedImages++;
+            console.warn(`⚠️ Ошибка загрузки: ${imageUrl} (${loadedImages}/${totalCriticalImages})`);
+            resolve(); // Все равно считаем загруженным
+          };
+          img.src = imageUrl;
+        });
+      }
+
+      let progress = 0;
+      const startTime = Date.now();
+      const minDuration = 500; // Минимум 0,5 секунда
+
+      function updateProgress() {
+        const elapsed = Date.now() - startTime;
+
+        // Прогресс на основе времени (максимум 70%)
+        const timeProgress = Math.min((elapsed / minDuration) * 70, 70);
+
+        // Прогресс на основе загруженных изображений (максимум 30%)
+        const imageProgress = (loadedImages / totalCriticalImages) * 30;
+
+        // Общий прогресс
+        const totalProgress = Math.min(timeProgress + imageProgress, 100);
+
+        // Обновляем прогресс-бар
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+
+        if (progressFill) progressFill.style.width = totalProgress + '%';
+        if (progressText) progressText.textContent = Math.round(totalProgress) + '%';
+
+        console.log(`📊 Прогресс: ${Math.round(totalProgress)}% (время: ${Math.round(timeProgress)}%, изображения: ${Math.round(imageProgress)}%)`);
+
+        // Условия завершения:
+        // 1. Прошло минимум времени И все изображения загружены
+        // 2. Или прошло больше 4 секунд (фолбэк)
+        const imagesComplete = loadedImages >= totalCriticalImages;
+        const timeComplete = elapsed >= minDuration;
+        const fallbackComplete = elapsed >= 8000;
+
+        const shouldComplete = (timeComplete && imagesComplete) || fallbackComplete;
+
+        if (!shouldComplete) {
+          requestAnimationFrame(updateProgress);
+        } else {
+          console.log('🎉 Завершаем прелоадер');
+          criticalImagesLoaded = true;
+          completePreloader();
+        }
+      }
+
+      function completePreloader() {
+        // Убеждаемся что прогресс 100%
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        if (progressFill) progressFill.style.width = '100%';
+        if (progressText) progressText.textContent = '100%';
+
+        // Плавно скрываем
+        preloader.style.transition = 'opacity 0.5s ease';
+        preloader.style.opacity = '0';
+
+        setTimeout(() => {
+          preloader.style.display = 'none';
+          console.log('✅ Прелоадер скрыт, критические изображения загружены:', criticalImagesLoaded);
+          startMainApplication();
+        }, 500);
+      }
+
+      // Запускаем отслеживание всех критических изображений
+      Promise.all(criticalImages.map(trackImageLoad))
+        .then(() => {
+          console.log('🎯 Все критические изображения загружены!');
+          criticalImagesLoaded = true;
+        })
+        .catch(error => {
+          console.error('❌ Ошибка при загрузке изображений:', error);
+        });
+
+      // Запускаем анимацию прогресса
+      updateProgress();
+    }
+
+    function startMainApplication() {
+      console.log('🚀 Запуск основного приложения...');
+
+      try {
+        if (window.appInitialized) {
+          console.log('⏭️ Приложение уже инициализировано');
+          return;
+        }
+        window.appInitialized = true;
+
+        // ЗАПУСКАЕМ ТОЛЬКО ОСНОВНЫЕ ФУНКЦИИ
+        shufflePhrasesOnInit();
+        renderPhrases();
+        setupEventListeners();
+        setupInitialState();
+        startCloudsAnimation();
+
+        // ЗАПУСКАЕМ АВТОПРОКРУТКУ ЧЕРЕЗ 6 СЕКУНД ПОСЛЕ ПРЕЛОУДЕРА
+        setTimeout(() => {
+          console.log('⏰ 6 секунд после прелоадера - запускаем автопрокрутку');
+          // НЕ УБИРАЕМ АКТИВНОСТЬ С "АВАНГАРДЕ" - она сама уйдет при автопрокрутке
+          startAutoScroll();
+        }, 3000);
+
+        console.log('✅ Основное приложение запущено, автопрокрутка через 6 сек');
+      } catch (error) {
+        console.error('❌ Ошибка при запуске приложения:', error);
+      }
+    }
+
+    // СТРАТЕГИЯ ЗАПУСКА
+    if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      console.log('📱 Мобильное устройство - запускаем прелоадер сразу');
+      setTimeout(simplePreloader, 100);
+    } else {
+      console.log('💻 Десктоп - ждем DOMContentLoaded');
+      document.addEventListener('DOMContentLoaded', simplePreloader);
+    }
+
+    // УБИРАЕМ ЛИШНИЙ КОД ИНИЦИАЛИЗАЦИИ - оставляем только это:
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('📄 DOM загружен');
+      lockOrientation();
+
+      // ЕСЛИ ПРЕЛОАДЕР НЕ СРАБОТАЛ ЧЕРЕЗ 10 СЕКУНД - ЗАПУСКАЕМ РЕЗЕРВНУЮ ИНИЦИАЛИЗАЦИЮ
+      setTimeout(() => {
+        if (!window.appInitialized) {
+          console.warn('🔄 Резервная инициализация (прелоадер не сработал)');
+          startMainApplication();
+        }
+      }, 10000);
+    });
+
+
+    // Фолбэк
+    setTimeout(() => {
+      if (!preloaderStarted) {
+        console.warn('⏰ Фолбэк: принудительный запуск прелоадера');
+        simplePreloader();
+      }
+    }, 1000);
+
+    console.log('🏁 Скрипт прелоадера загружен');
+  </script>
+
+  <script>
+    // Конфигурация с изображениями
+    const PHRASES = [
+      {
+        text: "Нужна ли реклама совершенству?",
+        image: "img/bmw.png",
+        alt: "Нужна ли реклама совершенству?"
+      },
+      {
+        text: "Время быть в Авангарде ",
+        image: "img/avangard.png",
+        alt: "Время быть в Авангарде"
+      },
+      {
+        text: "Живи на яркой стороне.",
+        image: "img/beeline.png",
+        alt: "Живи на яркой стороне."
+      },
+      {
+        text: "Будущее зависит от тебя.",
+        image: "img/megafon.png",
+        alt: "Будущее зависит от тебя."
+      },
+      {
+        text: "Бери от жизни все",
+        image: "img/pepsi.png",
+        alt: "Бери от жизни все"
+      },
+      {
+        text: "Нет ничего невозможного",
+        image: "img/adidas.png",
+        alt: "Нет ничего невозможного"
+      },
+      {
+        text: "Праздник к нам приходит",
+        image: "img/cola.png",
+        alt: "Праздник к нам приходит"
+      },
+      {
+        text: "Не грусти — похрусти",
+        image: "img/3kor.png",
+        alt: "Не грусти — похрусти"
+      },
+      {
+        text: "И пусть весь мир подождет",
+        image: "img/danissimo.png",
+        alt: "И пусть весь мир подождет"
+      },
+      {
+        text: "Все в восторге от тебя",
+        image: "img/maybelline.png",
+        alt: "Все в восторге от тебя"
+      },
+      {
+        text: "Всё будет, в шоколаде",
+        image: "img/mars.png",
+        alt: "Всё будет, в шоколаде"
+      },
+      {
+        text: "Вливайся",
+        image: "img/fanta.png",
+        alt: "Вливайся"
+      },
+      {
+        text: "Узнай, на что ты способен ",
+        image: "img/burn.png",
+        alt: "Узнай, на что ты способен"
+      },
+      {
+        text: "Клинское",
+        image: "img/klinskoe.png",
+        alt: "Клинское"
+      },
+      {
+        text: "Ты всегда думаешь о нас ",
+        image: "img/tefal.png",
+        alt: "Ты всегда думаешь о нас"
+      },
+      {
+        text: "kodak",
+        image: "img/kodak.png",
+        alt: "kodak"
+      },
+      {
+        text: "Надо чаще встречаться",
+        image: "img/danone.png",
+        alt: "Надо чаще встречаться"
+      },
+      {
+        text: "levis",
+        image: "img/levis.png",
+        alt: "levis"
+      },
+      {
+        text: "Стремление к совершенству",
+        image: "img/lexus.png",
+        alt: "Стремление к совершенству"
+      },
+      {
+        text: "Лучшее или ничего",
+        image: "img/mercedes.png",
+        alt: "Лучшее или ничего"
+      },
+      {
+        text: "mts",
+        image: "img/mts.png",
+        alt: "mts"
+      },
+      {
+        text: "Ведь Вы этого достойны",
+        image: "img/loreal.png",
+        alt: "Ведь Вы этого достойны"
+      },
+      {
+        text: "nalog",
+        image: "img/nalog.png",
+        alt: "nalog"
+      },
+      {
+        text: "nike",
+        image: "img/nike.png",
+        alt: "nike"
+      },
+      {
+        text: "ort",
+        image: "img/ort.png",
+        alt: "ort"
+      },
+      {
+        text: "twix",
+        image: "img/twix.png",
+        alt: "twix"
+      },
+      {
+        text: "yandex",
+        image: "img/yandex.png",
+        alt: "yandex"
+      },
+      {
+        text: "Управляй мечтой ",
+        image: "img/toyota.png",
+        alt: "Управляй мечтой"
+      },
+      {
+        text: "Ты меня удивляешь",
+        image: "img/volga.png",
+        alt: "Ты меня удивляешь"
+      },
+      {
+        text: "И ты победитель",
+        image: "img/wagon.png",
+        alt: "И ты победитель"
+      }
+    ];
+
+  </script>
+
+  <script>
+    // Элементы DOM
+    const phrasesList = document.getElementById('phrasesList');
+    const spinButton = document.getElementById('spinButton');
+    const stopButton = document.getElementById('stopButton');
+    const clouds = document.querySelectorAll('.cloud');
+    const foxsContainer = document.getElementById('foxsContainer');
+    const logo = document.querySelector('.logo');
+    const phrasesContainer = document.querySelector('.phrases-container');
+
+    // Переменные состояния
+    let isSpinning = false;
+    let isAutoScrolling = false;
+    let animationId = null;
+    let autoScrollId = null;
+    let startTime = 0;
+    let currentPosition = 0;
+    let selectedPhraseIndex = -1;
+    let phraseHeight = 0;
+    let containerHeight = 0;
+    let targetPosition = 0;
+    let usedPhrasesHistory = [];
+    let currentPhrasesOrder = [...PHRASES];
+    let spinDuration = 2500;
+    const MAX_HISTORY_SIZE = 5;
+
+    // Константы
+    const SCALE_ANIMATION_DELAY = 500;
+    const AUTO_SCROLL_INTERVAL = 2000;
+    const MIN_SPIN_TIME = 2000;
+    const MAX_SPIN_TIME = 3000;
+    const INITIAL_SPEED = 30;
+    const FINAL_SPEED = 8;
+    const SLOWDOWN_DURATION = 1500;
+
+    // ========== ИНИЦИАЛИЗАЦИЯ ==========
+    function init() {
+      // Проверяем, не инициализировано ли уже приложение
+      if (window.appInitialized) {
+        console.log('🔄 Приложение уже инициализировано прелоадером, запускаем только автопрокрутку');
+
+        // Запускаем автопрокрутку через 4 секунд
+        setTimeout(() => {
+          removeActiveClass();
+          startAutoScroll();
+        }, 4000);
+        return;
+      }
+
+      console.log('🔄 Инициализация с нуля...');
+
+      // 1. Перемешиваем фразы при открытии
+      shufflePhrasesOnInit();
+
+      // 2. Рендерим фразы
+      renderPhrases();
+
+      setupEventListeners();
+      setupInitialState();
+      startCloudsAnimation();
+
+      // 3. Запускаем автопрокрутку через 4 секунд
+      setTimeout(() => {
+        removeActiveClass();
+        startAutoScroll();
+      }, 4000);
+    }
+
+    function shufflePhrasesOnInit() {
+      const newOrder = [...PHRASES];
+
+      // Находим "Авангарде"
+      const avangardIndex = newOrder.findIndex(phrase =>
+        phrase.image.includes("avangard.png")
+      );
+      let avangardPhrase = null;
+
+      if (avangardIndex !== -1) {
+        avangardPhrase = newOrder.splice(avangardIndex, 1)[0];
+      }
+
+      // Тщательно перемешиваем остальные фразы
+      for (let i = newOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [newOrder[i], newOrder[j]] = [newOrder[j], newOrder[i]];
+      }
+
+      // ВОЗВРАЩАЕМ "АВАНГАРДЕ" В НАЧАЛО чтобы она была первой при показе
+      if (avangardPhrase) {
+        newOrder.unshift(avangardPhrase);
+      }
+
+      currentPhrasesOrder = newOrder;
+      console.log('🔄 Фразы перемешаны. Первая фраза:', currentPhrasesOrder[0]?.text);
+    }
+
+    function setupInitialState() {
+      // Устанавливаем "Авангарде" по центру и делаем активной
+      const centerOffset = containerHeight / 2 - phraseHeight / 2;
+      const avangardIndex = currentPhrasesOrder.findIndex(phrase =>
+        phrase.image.includes("avangard.png")
+      );
+
+      if (avangardIndex !== -1) {
+        // Позиционируем "Авангарде" по центру
+        targetPosition = (avangardIndex + 3) * phraseHeight - centerOffset;
+        currentPosition = targetPosition;
+        phrasesList.style.transform = `translateY(-${currentPosition}px)`;
+
+        // Делаем активной
+        setTimeout(() => {
+          const targetPhraseIndex = Math.floor((targetPosition + centerOffset) / phraseHeight);
+          highlightSpecificPhrase(targetPhraseIndex);
+        }, 100);
+      }
+
+      updateFadeEffects();
+    }
+
+    // ========== УПРАВЛЕНИЕ ПОВТОРАМИ ==========
+
+    function avoidRepeatPhrase() {
+      if (usedPhrasesHistory.length === 0) return false;
+
+      const centerOffset = containerHeight / 2 - phraseHeight / 2;
+      const currentCenterIndex = Math.floor((currentPosition + centerOffset) / phraseHeight);
+      const currentPhraseIndex = (currentCenterIndex - 3) % currentPhrasesOrder.length;
+
+      // Проверяем последние 3 фразы
+      const lastUsedPhrases = usedPhrasesHistory.slice(0, 3);
+
+      if (lastUsedPhrases.includes(currentPhraseIndex)) {
+        // Находим все доступные фразы (кроме последних 3 использованных)
+        const availablePhrases = currentPhrasesOrder
+          .map((_, index) => index)
+          .filter(index => !lastUsedPhrases.includes(index));
+
+        if (availablePhrases.length > 0) {
+          // Выбираем случайную из доступных
+          const randomIndex = Math.floor(Math.random() * availablePhrases.length);
+          const newPhraseIndex = availablePhrases[randomIndex];
+
+          // Сдвигаем к новой фразе
+          targetPosition = (newPhraseIndex + 3) * phraseHeight - centerOffset;
+          currentPosition = targetPosition;
+          phrasesList.style.transform = `translateY(-${currentPosition}px)`;
+          selectedPhraseIndex = newPhraseIndex;
+
+          return true;
+        }
+      }
+
+      selectedPhraseIndex = currentPhraseIndex;
+      return false;
+    }
+
+    function ensureAvangardVisible() {
+      const avangardIndex = currentPhrasesOrder.findIndex(phrase =>
+        phrase.image.includes("avangard.png")
+      );
+
+      if (avangardIndex !== -1) {
+        const centerOffset = containerHeight / 2 - phraseHeight / 2;
+        const currentCenterIndex = Math.floor((currentPosition + centerOffset) / phraseHeight);
+        const currentPhraseIndex = (currentCenterIndex - 3) % currentPhrasesOrder.length;
+
+        // Если "Авангарде" сейчас в центре, сдвигаемся
+        if (currentPhraseIndex === avangardIndex) {
+          const nextPhraseIndex = (avangardIndex + 1) % currentPhrasesOrder.length;
+          targetPosition = (nextPhraseIndex + 3) * phraseHeight - centerOffset;
+          currentPosition = targetPosition;
+          phrasesList.style.transform = `translateY(-${currentPosition}px)`;
+          selectedPhraseIndex = nextPhraseIndex;
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    // ========== ОСНОВНЫЕ ФУНКЦИИ ==========
+
+    function startSpinning() {
+      if (isSpinning) return;
+
+      // Останавливаем автопрокрутку (если она еще работает)
+      stopAutoScroll();
+      isSpinning = true;
+
+      spinButton.disabled = true;
+      addSpinButtonAnimation();
+      stopButton.disabled = false;
+
+      moveFoxDown();
+      moveLogoUp();
+      stopCloudsAnimation();
+      removeActiveClass();
+      removeCenterHighlight();
+      addSpinningScale();
+
+      currentPosition = 3 * phraseHeight;
+
+      setTimeout(() => {
+        startTime = Date.now();
+        spinDuration = MIN_SPIN_TIME + Math.random() * (MAX_SPIN_TIME - MIN_SPIN_TIME);
+        animateSpinning();
+      }, SCALE_ANIMATION_DELAY);
+    }
+
+    function animateSpinning() {
+      if (!isSpinning) return;
+
+      const elapsed = Date.now() - startTime;
+      const totalHeight = phrasesList.offsetHeight;
+
+      let currentSpeed;
+
+      if (elapsed < spinDuration) {
+        currentSpeed = INITIAL_SPEED;
+      } else if (elapsed < spinDuration + SLOWDOWN_DURATION) {
+        const slowdownProgress = (elapsed - spinDuration) / SLOWDOWN_DURATION;
+        currentSpeed = INITIAL_SPEED - (INITIAL_SPEED - FINAL_SPEED) * slowdownProgress;
+      } else {
+        const finalSlowdownProgress = (elapsed - spinDuration - SLOWDOWN_DURATION) / 1000;
+
+        if (finalSlowdownProgress >= 1) {
+          stopSpinning();
+          return;
+        }
+
+        currentSpeed = FINAL_SPEED * (1 - finalSlowdownProgress);
+      }
+
+      currentPosition += currentSpeed;
+
+      if (currentPosition >= totalHeight - containerHeight) {
+        currentPosition = currentPosition - (totalHeight - containerHeight) + (3 * phraseHeight);
+      }
+
+      phrasesList.style.transform = `translateY(-${currentPosition}px)`;
+      updateFadeEffects();
+
+      animationId = requestAnimationFrame(animateSpinning);
+    }
+
+    function stopSpinning() {
+      if (!isSpinning) return;
+      stopButton.disabled = true;
+      finishSpinning();
+    }
+
+    function finishSpinning() {
+      isSpinning = false;
+
+      const centerOffset = containerHeight / 2 - phraseHeight / 2;
+      const centerPhraseIndex = Math.floor((currentPosition + centerOffset) / phraseHeight);
+
+      selectedPhraseIndex = (centerPhraseIndex - 3) % currentPhrasesOrder.length;
+      if (selectedPhraseIndex < 0) selectedPhraseIndex += currentPhrasesOrder.length;
+
+      // 1. Проверяем и избегаем повторения последних фраз
+      const hadRepeat = avoidRepeatPhrase();
+
+      // 2. Если не было повтора, но "Авангарде" в центре - сдвигаем
+      if (!hadRepeat) {
+        ensureAvangardVisible();
+      }
+
+      // 3. Вычисляем финальную позицию
+      targetPosition = (selectedPhraseIndex + 3) * phraseHeight - centerOffset;
+
+      // 4. Плавная анимация к конечной позиции
+      animateToFinalPosition();
+    }
+
+    function animateToFinalPosition() {
+      const startPosition = currentPosition;
+      const distance = targetPosition - startPosition;
+      const animationDuration = 800;
+
+      let animationStartTime = Date.now();
+
+      function animate() {
+        const elapsed = Date.now() - animationStartTime;
+        const progress = Math.min(elapsed / animationDuration, 1);
+
+        // Плавная easing функция
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+
+        currentPosition = startPosition + distance * easeOut;
+        phrasesList.style.transform = `translateY(-${currentPosition}px)`;
+        updateFadeEffects();
+
+        if (progress < 1) {
+          animationId = requestAnimationFrame(animate);
+        } else {
+          // Когда анимация завершена, показываем активную фразу
+          completeSpinning();
+        }
+      }
+
+      animate();
+    }
+
+    function completeSpinning() {
+      // Убеждаемся, что мы на точной позиции
+      currentPosition = targetPosition;
+      phrasesList.style.transform = `translateY(-${currentPosition}px)`;
+      updateFadeEffects();
+
+      if (selectedPhraseIndex >= 0) {
+        addToHistory(selectedPhraseIndex);
+      }
+
+      // Плавно убираем масштабирование и показываем активную фразу
+      removeSpinningScale();
+
+      setTimeout(() => {
+        highlightSelectedPhrase();
+        resetUIState();
+      }, 300);
+    }
+
+    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+
+    function resetUIState() {
+      spinButton.disabled = false;
+      removeSpinButtonAnimation();
+      stopButton.disabled = true;
+      moveFoxUp();
+      moveLogoDown();
+      startCloudsAnimation();
+    }
+
+    function highlightSelectedPhrase() {
+      const centerOffset = containerHeight / 2 - phraseHeight / 2;
+      const targetPhraseIndex = Math.floor((targetPosition + centerOffset) / phraseHeight);
+      highlightSpecificPhrase(targetPhraseIndex);
+    }
+
+    function highlightSpecificPhrase(phraseIndex) {
+      const phrases = document.querySelectorAll('.phrase');
+      phrases.forEach((phrase, index) => {
+        if (index === phraseIndex) {
+          // Плавное добавление active класса
+          setTimeout(() => {
+            phrase.classList.add('active');
+          }, 100);
+        } else {
+          phrase.classList.remove('active');
+        }
+      });
+    }
+
+    function removeActiveClass() {
+      const phrases = document.querySelectorAll('.phrase');
+      phrases.forEach(phrase => {
+        phrase.classList.remove('active');
+      });
+    }
+
+    // ========== АВТОПРОКРУТКА ==========
+
+    function startAutoScroll() {
+      // Автопрокрутка работает только при первом запуске страницы
+      if (isAutoScrolling || isSpinning) return;
+
+      isAutoScrolling = true;
+
+      console.log('🎬 Начинаем автопрокрутку...');
+
+      // НАЧИНАЕМ С ТЕКУЩЕЙ ПОЗИЦИИ (где сейчас "Авангарде")
+      let currentPhraseIndex = Math.floor((currentPosition + (containerHeight / 2 - phraseHeight / 2)) / phraseHeight) - 3;
+      if (currentPhraseIndex < 0) currentPhraseIndex += currentPhrasesOrder.length;
+
+      console.log('📍 Начинаем с фразы:', currentPhraseIndex, currentPhrasesOrder[currentPhraseIndex]?.text);
+
+      function autoScroll() {
+        if (!isAutoScrolling || isSpinning) {
+          stopAutoScroll();
+          return;
+        }
+
+        // ПЕРЕХОДИМ К СЛЕДУЮЩЕЙ ФРАЗЕ
+        currentPhraseIndex = (currentPhraseIndex + 1) % currentPhrasesOrder.length;
+        const newPosition = (currentPhraseIndex + 3) * phraseHeight;
+
+        phrasesList.style.transition = 'transform 2s ease-in-out';
+        phrasesList.style.transform = `translateY(-${newPosition}px)`;
+        currentPosition = newPosition;
+
+        // АКТИВНОСТЬ С "АВАНГАРДЕ" СНИМЕТСЯ АВТОМАТИЧЕСКИ ПРИ ПЕРЕХОДЕ
+        setTimeout(() => {
+          updateFadeEffects();
+          updateCenterHighlight();
+        }, 500);
+
+        autoScrollId = setTimeout(autoScroll, AUTO_SCROLL_INTERVAL);
+      }
+
+      // ЗАПУСКАЕМ СРАЗУ БЕЗ ДОПОЛНИТЕЛЬНОЙ ЗАДЕРЖКИ
+      updateFadeEffects();
+      updateCenterHighlight();
+      autoScroll();
+    }
+
+    function stopAutoScroll() {
+      isAutoScrolling = false;
+      if (autoScrollId) {
+        clearTimeout(autoScrollId);
+      }
+      removeCenterHighlight();
+      phrasesList.style.transition = 'none';
+      updateFadeEffects();
+    }
+
+    // ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
+
+    function setupEventListeners() {
+      spinButton.addEventListener('click', startSpinning);
+      stopButton.addEventListener('click', stopSpinning);
+
+      spinButton.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        startSpinning();
+      });
+
+      stopButton.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        stopSpinning();
+      });
+    }
+
+    function renderPhrases() {
+      phrasesList.innerHTML = '';
+
+      // Используем перемешанный порядок currentPhrasesOrder
+      for (let i = 0; i < 3; i++) {
+        const phraseIndex = (currentPhrasesOrder.length - 3 + i) % currentPhrasesOrder.length;
+        const phraseElement = createPhraseElementFromOrder(phraseIndex);
+        phrasesList.appendChild(phraseElement);
+      }
+
+      currentPhrasesOrder.forEach((phrase, index) => {
+        const phraseElement = createPhraseElementFromOrder(index);
+        phrasesList.appendChild(phraseElement);
+      });
+
+      for (let i = 0; i < 3; i++) {
+        const phraseIndex = i % currentPhrasesOrder.length;
+        const phraseElement = createPhraseElementFromOrder(phraseIndex);
+        phrasesList.appendChild(phraseElement);
+      }
+
+      phraseHeight = document.querySelector('.phrase').offsetHeight;
+      containerHeight = document.querySelector('.phrases-container').offsetHeight;
+      currentPosition = 3 * phraseHeight;
+      phrasesList.style.transform = `translateY(-${currentPosition}px)`;
+    }
+
+    function createPhraseElementFromOrder(index) {
+      const phraseElement = document.createElement('div');
+      phraseElement.className = 'phrase';
+
+      const img = document.createElement('img');
+      img.src = currentPhrasesOrder[index].image;
+      img.alt = currentPhrasesOrder[index].alt;
+      img.className = 'phrase-image';
+
+      phraseElement.appendChild(img);
+      return phraseElement;
+    }
+
+    function updatePhrasesDisplay() {
+      const phrases = document.querySelectorAll('.phrase');
+      phrases.forEach((phraseElement, index) => {
+        const img = phraseElement.querySelector('.phrase-image');
+        if (img && currentPhrasesOrder[index]) {
+          img.src = currentPhrasesOrder[index].image;
+          img.alt = currentPhrasesOrder[index].alt;
+        }
+      });
+    }
+
+    // Функции анимации
+    function stopCloudsAnimation() {
+      clouds.forEach(cloud => {
+        cloud.style.animationPlayState = 'paused';
+      });
+    }
+
+    function startCloudsAnimation() {
+      clouds.forEach(cloud => {
+        cloud.style.animationPlayState = 'running';
+      });
+    }
+
+    function moveFoxDown() {
+      foxsContainer.classList.add('fox-down');
+    }
+
+    function moveFoxUp() {
+      foxsContainer.classList.remove('fox-down');
+    }
+
+    function moveLogoUp() {
+      logo.classList.add('up');
+    }
+
+    function moveLogoDown() {
+      logo.classList.remove('up');
+    }
+
+    function addSpinningScale() {
+      phrasesContainer.style.transition = 'transform 0.3s ease-out';
+      phrasesContainer.classList.add('spinning');
+    }
+
+    function removeSpinningScale() {
+      // Плавное убирание масштабирования
+      phrasesContainer.style.transition = 'transform 0.5s ease-out';
+      phrasesContainer.classList.remove('spinning');
+
+      // Убираем transition после анимации
+      setTimeout(() => {
+        phrasesContainer.style.transition = '';
+      }, 500);
+    }
+
+    function addSpinButtonAnimation() {
+      spinButton.classList.add('spinning');
+    }
+
+    function removeSpinButtonAnimation() {
+      spinButton.classList.remove('spinning');
+    }
+
+    function updateCenterHighlight() {
+      const phrases = document.querySelectorAll('.phrase');
+      const centerOffset = containerHeight / 2 - phraseHeight / 2;
+      const centerPhraseIndex = Math.round((currentPosition + centerOffset) / phraseHeight);
+
+      phrases.forEach((phrase, index) => {
+        phrase.classList.remove('center-highlight');
+        if (index === centerPhraseIndex) {
+          phrase.classList.add('center-highlight');
+        }
+      });
+    }
+
+    function removeCenterHighlight() {
+      const phrases = document.querySelectorAll('.phrase');
+      phrases.forEach(phrase => {
+        phrase.classList.remove('center-highlight');
+      });
+    }
+
+    function updateFadeEffects() {
+      const phrases = document.querySelectorAll('.phrase');
+      const centerOffset = containerHeight / 2 - phraseHeight / 2;
+      const centerPhraseIndex = Math.floor((currentPosition + centerOffset) / phraseHeight);
+
+      phrases.forEach((phrase, index) => {
+        phrase.classList.remove('top-fade', 'bottom-fade');
+
+        if (index === centerPhraseIndex - 1) {
+          phrase.classList.add('top-fade');
+        } else if (index === centerPhraseIndex + 1) {
+          phrase.classList.add('bottom-fade');
+        }
+      });
+    }
+
+    function addToHistory(phraseIndex) {
+      // Добавляем в начало истории
+      usedPhrasesHistory.unshift(phraseIndex);
+
+      // Ограничиваем размер истории
+      if (usedPhrasesHistory.length > MAX_HISTORY_SIZE) {
+        usedPhrasesHistory = usedPhrasesHistory.slice(0, MAX_HISTORY_SIZE);
+      }
+    }
+
+    function lockOrientation() {
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('portrait').catch(function (error) {
+          console.log('Orientation lock failed: ', error);
+        });
+      }
+    }
+
+    // Инициализация
+    window.addEventListener('DOMContentLoaded', function () {
+      init();
+      lockOrientation();
+    });
+
+    window.addEventListener('orientationchange', function () {
+      setTimeout(lockOrientation, 100);
+    });
+  </script>
+
+
+
+</body>
+
+</html>
